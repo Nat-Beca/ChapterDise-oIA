@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear mi tarjeta — Git Workshop</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f0f5;
+      --muted: #777;
+      --accent: #7c6af7;
+      --accent2: #f76ab0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+    }
+
+    /* ─── Header ─────────────── */
+    header {
+      grid-column: 1 / -1;
+      padding: 2rem 2.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-left p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .header-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn:hover { background: var(--surface2); transform: translateY(-1px); }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.primary:hover { filter: brightness(1.15); }
+
+    .btn.success {
+      background: #166534;
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+
+    /* ─── Editor panel ───────── */
+    .panel-editor {
+      padding: 2rem 2.5rem;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    input, textarea, select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.9rem;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .color-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .color-input-wrap {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      width: 40px;
+      height: 40px;
+      padding: 2px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* SVG paste area */
+    .svg-area {
+      background: var(--surface2);
+      border: 1px dashed rgba(124,106,247,0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .svg-area code {
+      display: block;
+      background: rgba(0,0,0,0.3);
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      margin-top: 0.5rem;
+      color: #a78bfa;
+      overflow-x: auto;
+    }
+
+    /* ─── Preview panel ──────── */
+    .panel-preview {
+      padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .preview-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      align-self: flex-start;
+    }
+
+    /* Card preview (same as index.html) */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .card:hover { transform: translateY(-6px); }
+
+    .card-art {
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s ease;
+    }
+
+    .card-info {
+      padding: 1.1rem 1.4rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .card-role {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .card-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .card-fact {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .card-fact::before { content: "✦  "; color: var(--accent); }
+
+    /* Code output */
+    .code-output {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .code-output-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .code-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: #a78bfa;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+      max-height: 260px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.65rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    .tip {
+      background: rgba(124,106,247,0.07);
+      border: 1px solid rgba(124,106,247,0.15);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .tip strong { color: var(--accent); }
+
+    /* ─── Responsive ─────────── */
+    @media (max-width: 700px) {
+      body { grid-template-columns: 1fr; }
+      .panel-editor { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>✏️ Crear mi tarjeta</h1>
+    <p>Completa los campos, pega tu SVG de Claude y copia el código listo para el muro.</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="window.open('PROMPTS.md')">🤖 Prompts para Claude</button>
+    <button class="btn primary" onclick="window.location.href='index.html'">← Ver el muro</button>
+  </div>
+</header>
+
+<!-- EDITOR -->
+<div class="panel-editor">
+
+  <div>
+    <p class="section-title">Tus datos</p>
+    <div style="display:flex; flex-direction:column; gap:0.9rem;">
+      <div class="field">
+        <label>Nombre completo</label>
+        <input type="text" id="f-nombre" placeholder="Ej: Nataly Betancur" oninput="updatePreview()"/>
+      </div>
+      <div class="field">
+        <label>Rol / Título</label>
+        <input type="text" id="f-rol" placeholder="Ej: Product Designer" oninput="updatePreview()"/>
+      </div>
+      <div class="field">
+        <label>Dato curioso o frase que te represente</label>
+        <textarea id="f-fact" placeholder="Ej: Diseño con música de los 80s de fondo sin falta." oninput="updatePreview()"></textarea>
+      </div>
+      <div class="field">
+        <label>ID para el HTML <span style="color:var(--muted)">(sin espacios, solo letras y guiones)</span></label>
+        <input type="text" id="f-id" placeholder="Ej: nataly" oninput="sanitizeId(); updatePreview()"/>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-title">Colores del fondo</p>
+    <div class="color-row">
+      <div class="color-field">
+        <label>Color 1</label>
+        <div class="color-input-wrap">
+          <input type="color" id="f-color1" value="#1a1a2e" oninput="updatePreview()"/>
+          <input type="text" id="f-color1-hex" value="#1a1a2e" placeholder="#000000"
+                 oninput="syncColorFromText('color1')" style="flex:1"/>
+        </div>
+      </div>
+      <div class="color-field">
+        <label>Color 2</label>
+        <div class="color-input-wrap">
+          <input type="color" id="f-color2" value="#7c6af7" oninput="updatePreview()"/>
+          <input type="text" id="f-color2-hex" value="#7c6af7" placeholder="#ffffff"
+                 oninput="syncColorFromText('color2')" style="flex:1"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-title">Arte SVG (generado con Claude)</p>
+    <div class="svg-area">
+      <span>Pega aquí el código SVG que te dio Claude. Ve a <strong style="color:var(--accent)">PROMPTS.md</strong> para ver los prompts disponibles.</span>
+      <code>Solo el contenido &lt;svg ...&gt;...&lt;/svg&gt;</code>
+    </div>
+    <textarea id="f-svg" style="margin-top:0.75rem; font-family:'Courier New',monospace; font-size:0.75rem; min-height:120px;"
+              placeholder='<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">&#10;  <!-- tu arte aquí -->&#10;</svg>'
+              oninput="updatePreview()"></textarea>
+  </div>
+
+</div>
+
+<!-- PREVIEW -->
+<div class="panel-preview">
+  <p class="preview-label">Vista previa en tiempo real</p>
+
+  <article class="card">
+    <div class="card-art" id="prev-art" style="background: linear-gradient(135deg, #1a1a2e, #7c6af7);">
+      <svg id="prev-svg-default" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+        <text x="40" y="46" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="24" font-family="system-ui">?</text>
+      </svg>
+    </div>
+    <div class="card-info">
+      <span class="card-role" id="prev-role">Tu Rol</span>
+      <h2 class="card-name" id="prev-name">Tu Nombre</h2>
+      <p class="card-fact" id="prev-fact">Tu dato curioso aparecerá aquí.</p>
+    </div>
+  </article>
+
+  <div class="code-output">
+    <p class="code-output-label">Código listo para copiar en index.html</p>
+    <div style="position:relative;">
+      <pre class="code-block" id="code-out"></pre>
+      <button class="copy-btn" onclick="copyCode()">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>Próximo paso:</strong> Copia el código, pégalo en <code style="color:inherit">index.html</code> justo debajo del comentario
+    <em>"AGREGA TU TARJETA AQUÍ"</em> y sigue las instrucciones del README.
+  </div>
+</div>
+
+<script>
+  function sanitizeId() {
+    const el = document.getElementById('f-id');
+    el.value = el.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }
+
+  function syncColorFromText(which) {
+    const hex = document.getElementById('f-' + which + '-hex').value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+      document.getElementById('f-' + which).value = hex;
+    }
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const nombre = document.getElementById('f-nombre').value || 'Tu Nombre';
+    const rol    = document.getElementById('f-rol').value    || 'Tu Rol';
+    const fact   = document.getElementById('f-fact').value   || 'Tu dato curioso aparecerá aquí.';
+    const svgRaw = document.getElementById('f-svg').value.trim();
+    const c1     = document.getElementById('f-color1').value;
+    const c2     = document.getElementById('f-color2').value;
+    const id     = document.getElementById('f-id').value     || 'tu-nombre';
+
+    // Sync hex fields
+    document.getElementById('f-color1-hex').value = c1;
+    document.getElementById('f-color2-hex').value = c2;
+
+    // Update preview card
+    document.getElementById('prev-name').textContent = nombre;
+    document.getElementById('prev-role').textContent = rol;
+    document.getElementById('prev-fact').textContent = fact;
+    document.getElementById('prev-art').style.background =
+      `linear-gradient(135deg, ${c1}, ${c2})`;
+
+    const artEl = document.getElementById('prev-art');
+    const existing = artEl.querySelector('svg');
+    if (existing) existing.remove();
+
+    if (svgRaw) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = svgRaw;
+      const svg = tmp.querySelector('svg');
+      if (svg) {
+        svg.setAttribute('width', '110');
+        svg.setAttribute('height', '110');
+        artEl.appendChild(svg);
+        document.getElementById('prev-svg-default').style.display = 'none';
+      }
+    } else {
+      document.getElementById('prev-svg-default').style.display = '';
+    }
+
+    // Generate code
+    const svgBlock = svgRaw
+      ? svgRaw.split('\n').map(l => '    ' + l).join('\n')
+      : '    <!-- Pega aquí el SVG de Claude -->';
+
+    const code =
+`<article class="card" id="${id}">
+  <div class="card-art" style="background: linear-gradient(135deg, ${c1}, ${c2});">
+${svgBlock}
+  </div>
+  <div class="card-info">
+    <span class="card-role">${rol}</span>
+    <h2 class="card-name">${nombre}</h2>
+    <p class="card-fact">${fact}</p>
+  </div>
+</article>`;
+
+    document.getElementById('code-out').textContent = code;
+  }
+
+  function copyCode() {
+    const code = document.getElementById('code-out').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '¡Copiado!';
+      btn.style.color = '#4ade80';
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.style.color = ''; }, 2000);
+    });
+  }
+
+  updatePreview();
+</script>
+</body>
+</html>
