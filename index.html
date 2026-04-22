@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muro del Equipo — Git Workshop</title>
+  <style>
+    /* ─── Reset & Base ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0f5;
+      --muted: #777;
+      --accent: #7c6af7;
+      --accent2: #f76ab0;
+      --green: #4ade80;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Noise texture overlay ─────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 5rem 2rem 1.5rem;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      background: rgba(124,106,247,0.1);
+      border: 1px solid rgba(124,106,247,0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+    }
+
+    .eyebrow .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    header h1 {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .subtitle {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 460px;
+      margin-inline: auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Stats bar ──────────────────────────────────── */
+    .stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 2.5rem auto 0;
+      max-width: 600px;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+    }
+
+    /* ─── Progress bar ───────────────────────────────── */
+    .progress-wrap {
+      max-width: 480px;
+      margin: 2rem auto 0;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0%;
+    }
+
+    /* ─── Toolbar ────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin: 2.5rem auto 0;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: all 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+
+    .btn:hover {
+      background: var(--surface2);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.primary:hover {
+      filter: brightness(1.15);
+      background: var(--accent);
+    }
+
+    /* ─── Grid ───────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+      max-width: 1200px;
+      margin: 3rem auto 0;
+      padding: 0 2rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Card ───────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+      cursor: default;
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .card[id="ejemplo"] {
+      border-style: dashed;
+      opacity: 0.45 !important;
+    }
+
+    .card[id="ejemplo"]:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .card-art {
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Shine effect on hover */
+    .card-art::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover .card-art::after { opacity: 1; }
+
+    .card-info {
+      padding: 1.1rem 1.4rem 1.4rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .card-role {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .card-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .card-fact {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .card-fact::before { content: "✦  "; color: var(--accent); }
+
+    /* ─── Empty slot ─────────────────────────────────── */
+    .card-empty {
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 20px;
+      aspect-ratio: unset;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.12);
+      font-size: 0.85rem;
+      cursor: default;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .card-empty:hover {
+      border-color: rgba(124,106,247,0.3);
+      color: rgba(124,106,247,0.5);
+    }
+
+    .card-empty .empty-icon { font-size: 1.8rem; }
+
+    /* ─── Confetti canvas ────────────────────────────── */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ─── Celebration banner ─────────────────────────── */
+    .celebration {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 998;
+      box-shadow: 0 8px 40px rgba(124,106,247,0.5);
+      animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+    }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div class="celebration" id="celebration">🎉 ¡El equipo completo está en el muro!</div>
+
+<header>
+  <div class="eyebrow"><span class="dot"></span> Git Workshop · Avaldigitallabs</div>
+  <h1>Muro del Equipo</h1>
+  <p class="subtitle">Cada tarjeta fue creada por una persona del equipo con ayuda de Claude. ¿Ya está la tuya?</p>
+</header>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat">
+    <span class="stat-number" id="stat-cards">0</span>
+    <span class="stat-label">Tarjetas</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-number" id="stat-commits">0</span>
+    <span class="stat-label">Commits</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-number" id="stat-percent">0%</span>
+    <span class="stat-label">Completo</span>
+  </div>
+</div>
+
+<!-- Barra de progreso -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Esperando al equipo…</span>
+    <span id="progress-fraction">0 / 8</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <button class="btn" onclick="shuffleCards()" title="Mezcla el orden de las tarjetas">
+    🔀 Shuffle
+  </button>
+  <button class="btn" onclick="spotlightRandom()" title="Destaca una tarjeta al azar">
+    🔦 Spotlight
+  </button>
+  <button class="btn primary" onclick="window.open('mi-tarjeta.html')" title="Prueba tu tarjeta aquí primero">
+    ✏️ Crear mi tarjeta
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     GRID DE TARJETAS
+     Cambia TEAM_TOTAL arriba si el equipo tiene más o menos personas
+═══════════════════════════════════════════════════════════ -->
+<main class="grid" id="grid">
+
+  <!-- ──────────────────────────────────────────────────
+       EJEMPLO — referencia visual (no borres esta tarjeta)
+  ─────────────────────────────────────────────────── -->
+  <article class="card" id="ejemplo">
+    <div class="card-art" style="background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);">
+      <svg width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#e94560" stroke-width="1.5" opacity="0.5">
+          <animate attributeName="r" values="50;56;50" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="60" cy="60" r="34" fill="none" stroke="#0f3460" stroke-width="8"/>
+        <circle cx="60" cy="60" r="17" fill="#e94560" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="60" y="65" text-anchor="middle" fill="white" font-size="13" font-family="system-ui" font-weight="bold">EJ</text>
+      </svg>
+    </div>
+    <div class="card-info">
+      <span class="card-role">Ejemplo · Solo para referencia</span>
+      <h2 class="card-name">Tarjeta de Ejemplo</h2>
+      <p class="card-fact">Esta tarjeta muestra el formato. ¡Crea la tuya!</p>
+    </div>
+  </article>
+
+  <!-- ══════════════════════════════════════════════════
+       👇 AGREGA TU TARJETA AQUÍ
+       Copia el bloque <article> de abajo, pégalo después
+       de esta línea y personaliza cada parte.
+  ══════════════════════════════════════════════════ -->
+
+  <!-- Slots vacíos (se generan dinámicamente con JS) -->
+
+</main>
+
+<footer>
+  Hecho con ❤️ durante el Git Workshop &nbsp;·&nbsp;
+  <a href="README.md" target="_blank">Ver instrucciones</a> &nbsp;·&nbsp;
+  <a href="PROMPTS.md" target="_blank">Prompts para Claude</a>
+</footer>
+
+<script>
+  /* ─── Config ──────────────────────────────────────────
+     Cambia TEAM_TOTAL al número de personas en tu equipo
+  ──────────────────────────────────────────────────── */
+  const TEAM_TOTAL = 12;
+
+  /* ─── Conteo de tarjetas ─────────────────────────── */
+  function countRealCards() {
+    const all = document.querySelectorAll('.card');
+    let count = 0;
+    all.forEach(c => { if (c.id !== 'ejemplo') count++; });
+    return count;
+  }
+
+  function updateStats() {
+    const count = countRealCards();
+    const pct   = Math.round((count / TEAM_TOTAL) * 100);
+
+    animateNumber('stat-cards', count);
+    animateNumber('stat-commits', count);
+    document.getElementById('stat-percent').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-fraction').textContent = count + ' / ' + TEAM_TOTAL;
+
+    if (count === 0) {
+      document.getElementById('progress-text').textContent = 'Esperando al equipo…';
+    } else if (count < TEAM_TOTAL) {
+      document.getElementById('progress-text').textContent = '¡Sigan llegando!';
+    } else {
+      document.getElementById('progress-text').textContent = '¡Equipo completo! 🎉';
+      triggerCelebration();
+    }
+  }
+
+  function animateNumber(id, target) {
+    const el = document.getElementById(id);
+    let current = 0;
+    const step = Math.ceil(target / 20);
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current;
+      if (current >= target) clearInterval(timer);
+    }, 40);
+  }
+
+  /* ─── Slots vacíos ───────────────────────────────── */
+  function fillEmptySlots() {
+    const grid    = document.getElementById('grid');
+    const count   = countRealCards();
+    const missing = TEAM_TOTAL - count;
+
+    document.querySelectorAll('.card-empty').forEach(e => e.remove());
+
+    for (let i = 0; i < missing; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'card-empty';
+      slot.innerHTML = '<span class="empty-icon">👤</span><span>Esperando tarjeta…</span>';
+      grid.appendChild(slot);
+    }
+  }
+
+  /* ─── Animación de entrada ───────────────────────── */
+  function animateCards() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), 80 * i + 100);
+    });
+  }
+
+  /* ─── Shuffle ────────────────────────────────────── */
+  function shuffleCards() {
+    const grid  = document.getElementById('grid');
+    const cards = [...grid.querySelectorAll('.card:not(#ejemplo)')];
+
+    cards.forEach(c => {
+      c.style.transition = 'opacity 0.2s';
+      c.style.opacity = '0';
+    });
+
+    setTimeout(() => {
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        if (cards[i].parentNode && cards[j].parentNode) {
+          const tmp = document.createElement('div');
+          cards[i].parentNode.insertBefore(tmp, cards[i]);
+          cards[j].parentNode.insertBefore(cards[i], cards[j]);
+          tmp.parentNode.insertBefore(cards[j], tmp);
+          tmp.remove();
+        }
+      }
+      cards.forEach(c => { c.style.opacity = '1'; });
+    }, 250);
+  }
+
+  /* ─── Spotlight ──────────────────────────────────── */
+  function spotlightRandom() {
+    const cards = [...document.querySelectorAll('.card:not(#ejemplo)')];
+    if (!cards.length) return;
+
+    document.querySelectorAll('.card').forEach(c => c.style.filter = 'brightness(0.25)');
+    const pick = cards[Math.floor(Math.random() * cards.length)];
+    pick.style.filter = 'brightness(1.2)';
+    pick.style.transform = 'scale(1.04)';
+    pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+      document.querySelectorAll('.card').forEach(c => {
+        c.style.filter = '';
+        c.style.transform = '';
+      });
+    }, 2500);
+  }
+
+  /* ─── Confetti ───────────────────────────────────── */
+  function triggerCelebration() {
+    document.getElementById('celebration').style.display = 'block';
+    launchConfetti();
+    setTimeout(() => {
+      document.getElementById('celebration').style.display = 'none';
+    }, 5000);
+  }
+
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx    = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors  = ['#7c6af7','#f76ab0','#4ade80','#fbbf24','#38bdf8','#fb923c'];
+    const pieces  = Array.from({ length: 120 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -20,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 4 + 2,
+      rot: Math.random() * 360,
+      rspeed: (Math.random() - 0.5) * 8,
+    }));
+
+    let frame;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      pieces.forEach(p => {
+        if (p.y > canvas.height + 20) return;
+        alive = true;
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vy += 0.08;
+        p.rot += p.rspeed;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      if (alive) frame = requestAnimationFrame(draw);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    draw();
+    setTimeout(() => cancelAnimationFrame(frame), 5000);
+  }
+
+  /* ─── Init ───────────────────────────────────────── */
+  window.addEventListener('DOMContentLoaded', () => {
+    fillEmptySlots();
+    animateCards();
+    setTimeout(updateStats, 300);
+  });
+</script>
+
+</body>
+</html>
