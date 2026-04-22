@@ -19,7 +19,7 @@ Agregar **tu propia tarjeta** al muro. Cada tarjeta tiene:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <url-del-repo>
+git clone https://github.com/Nat-Beca/ChapterDise-oIA.git
 cd git-workshop
 ```
 
