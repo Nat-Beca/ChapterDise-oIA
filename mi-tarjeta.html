@@ -22,7 +22,8 @@
       background: var(--bg);
       color: var(--text);
       font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: auto 1fr;
@@ -287,10 +288,12 @@
       padding: 1rem;
       font-family: 'Courier New', monospace;
       font-size: 0.7rem;
-      color: #a78bfa;
+      color: #c4b5fd;
       line-height: 1.6;
       overflow-x: auto;
-      white-space: pre;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: 120px;
       max-height: 260px;
       overflow-y: auto;
       position: relative;
@@ -426,9 +429,14 @@
   </article>
 
   <div class="code-output">
-    <p class="code-output-label">Código listo para copiar en index.html</p>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+      <p class="code-output-label" style="margin:0;">Código para index.html</p>
+      <button class="btn primary" onclick="generateCode()" style="font-size:0.75rem; padding:0.35rem 0.9rem;">
+        ⚡ Generar código
+      </button>
+    </div>
     <div style="position:relative;">
-      <pre class="code-block" id="code-out"></pre>
+      <pre class="code-block" id="code-out">← Completa tus datos y haz clic en "Generar código"</pre>
       <button class="copy-btn" onclick="copyCode()">Copiar</button>
     </div>
   </div>
@@ -460,21 +468,22 @@
     const svgRaw = document.getElementById('f-svg').value.trim();
     const c1     = document.getElementById('f-color1').value;
     const c2     = document.getElementById('f-color2').value;
-    const id     = document.getElementById('f-id').value     || 'tu-nombre';
 
     // Sync hex fields
     document.getElementById('f-color1-hex').value = c1;
     document.getElementById('f-color2-hex').value = c2;
 
-    // Update preview card
+    // Update card info
     document.getElementById('prev-name').textContent = nombre;
     document.getElementById('prev-role').textContent = rol;
     document.getElementById('prev-fact').textContent = fact;
-    document.getElementById('prev-art').style.background =
-      `linear-gradient(135deg, ${c1}, ${c2})`;
 
+    // Update background
     const artEl = document.getElementById('prev-art');
-    const existing = artEl.querySelector('svg');
+    artEl.style.background = 'linear-gradient(135deg, ' + c1 + ', ' + c2 + ')';
+
+    // Update SVG
+    const existing = artEl.querySelector('svg:not(#prev-svg-default)');
     if (existing) existing.remove();
 
     if (svgRaw) {
@@ -482,46 +491,80 @@
       tmp.innerHTML = svgRaw;
       const svg = tmp.querySelector('svg');
       if (svg) {
-        svg.setAttribute('width', '110');
-        svg.setAttribute('height', '110');
+        svg.style.cssText = 'max-width:75%; max-height:75%; display:block;';
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
         artEl.appendChild(svg);
         document.getElementById('prev-svg-default').style.display = 'none';
       }
     } else {
       document.getElementById('prev-svg-default').style.display = '';
     }
+  }
 
-    // Generate code
+  function generateCode() {
+    const nombre = document.getElementById('f-nombre').value || 'Tu Nombre';
+    const rol    = document.getElementById('f-rol').value    || 'Tu Rol';
+    const fact   = document.getElementById('f-fact').value   || 'Tu dato curioso aparecerá aquí.';
+    const svgRaw = document.getElementById('f-svg').value.trim();
+    const c1     = document.getElementById('f-color1').value;
+    const c2     = document.getElementById('f-color2').value;
+    const id     = document.getElementById('f-id').value     || 'tu-nombre';
+
     const svgBlock = svgRaw
-      ? svgRaw.split('\n').map(l => '    ' + l).join('\n')
+      ? svgRaw.split('\n').map(function(l) { return '    ' + l; }).join('\n')
       : '    <!-- Pega aquí el SVG de Claude -->';
 
-    const code =
-`<article class="card" id="${id}">
-  <div class="card-art" style="background: linear-gradient(135deg, ${c1}, ${c2});">
-${svgBlock}
-  </div>
-  <div class="card-info">
-    <span class="card-role">${rol}</span>
-    <h2 class="card-name">${nombre}</h2>
-    <p class="card-fact">${fact}</p>
-  </div>
-</article>`;
+    const code = [
+      '<article class="card" id="' + id + '">',
+      '  <div class="card-art" style="background: linear-gradient(135deg, ' + c1 + ', ' + c2 + ');">',
+      svgBlock,
+      '  </div>',
+      '  <div class="card-info">',
+      '    <span class="card-role">' + rol + '</span>',
+      '    <h2 class="card-name">' + nombre + '</h2>',
+      '    <p class="card-fact">' + fact + '</p>',
+      '  </div>',
+      '</article>'
+    ].join('\n');
 
-    document.getElementById('code-out').textContent = code;
+    const el = document.getElementById('code-out');
+    if (el) {
+      el.textContent = code;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 
   function copyCode() {
     const code = document.getElementById('code-out').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      const btn = document.querySelector('.copy-btn');
+    const btn = document.querySelector('.copy-btn');
+
+    const success = () => {
       btn.textContent = '¡Copiado!';
       btn.style.color = '#4ade80';
       setTimeout(() => { btn.textContent = 'Copiar'; btn.style.color = ''; }, 2000);
-    });
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(success).catch(() => fallbackCopy(code, success));
+    } else {
+      fallbackCopy(code, success);
+    }
   }
 
-  updatePreview();
+  function fallbackCopy(text, onSuccess) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    onSuccess();
+  }
+
+  window.addEventListener('DOMContentLoaded', updatePreview);
 </script>
 </body>
 </html>
