@@ -471,7 +471,250 @@
        de esta línea y personaliza cada parte.
   ══════════════════════════════════════════════════ -->
 
-  <!-- Slots vacíos (se generan dinámicamente con JS) -->
+ <article class="card" id="nat">
+  <div class="card-art" style="background: linear-gradient(135deg, #1a1a2e, #7c6af7);">
+    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+    <title>Avatar de diseñador espacial animado</title>
+    <desc>Geometría espacial con planetas y órbitas en azul eléctrico</desc>
+    <defs>
+      <style>
+        @keyframes orbit1 {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes orbit2 {
+          from { transform: rotate(120deg); }
+          to   { transform: rotate(480deg); }
+        }
+        @keyframes orbit3 {
+          from { transform: rotate(240deg); }
+          to   { transform: rotate(-120deg); }
+        }
+        @keyframes pulse {
+          0%,100% { r: 10; opacity: 1; }
+          50%      { r: 12; opacity: 0.85; }
+        }
+        @keyframes spinRing {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(-360deg); }
+        }
+      </style>
+    </defs>
+    
+    <rect width="120" height="120" fill="#0a0a1a" rx="18"/>
+    
+    <circle cx="22" cy="18" r="1" fill="#5566ff" opacity="0.7">
+      <animate attributeName="opacity" values="0.7;0.1;0.7" dur="2.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="98" cy="12" r="1.2" fill="#a855f7" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="108" cy="95" r="0.9" fill="#3b82f6" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3.1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="12" cy="88" r="1.1" fill="#818cf8" opacity="0.7">
+      <animate attributeName="opacity" values="0.7;0.15;0.7" dur="2.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="55" cy="8" r="0.8" fill="#c4b5fd" opacity="0.5">
+      <animate attributeName="opacity" values="0.5;0.05;0.5" dur="1.9s" repeatCount="indefinite"/>
+    </circle>
+    
+    <ellipse cx="60" cy="60" rx="34" ry="34" fill="none" stroke="#1e1b4b" stroke-width="0.5"/>
+    
+    <g transform="translate(60,60)">
+      <ellipse rx="34" ry="10" fill="none" stroke="#3730a3" stroke-width="0.6" opacity="0.5" transform="rotate(30)"/>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <g style="animation: orbit1 6s linear infinite; transform-origin: 0 0;">
+        <circle cx="34" cy="0" r="5.5" fill="#2563eb"/>
+        <circle cx="34" cy="0" r="2.5" fill="#93c5fd" opacity="0.9"/>
+      </g>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <ellipse rx="22" ry="22" fill="none" stroke="#4c1d95" stroke-width="0.5" opacity="0.4"/>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <g style="animation: orbit2 4s linear infinite; transform-origin: 0 0;">
+        <circle cx="22" cy="0" r="3.5" fill="#7c3aed"/>
+        <circle cx="22" cy="0" r="1.5" fill="#ddd6fe" opacity="0.9"/>
+      </g>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <ellipse rx="14" ry="14" fill="none" stroke="#1e40af" stroke-width="0.4" opacity="0.35"/>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <g style="animation: orbit3 2.8s linear infinite; transform-origin: 0 0;">
+        <circle cx="14" cy="0" r="2.5" fill="#0ea5e9"/>
+        <circle cx="14" cy="0" r="1" fill="#e0f2fe" opacity="0.95"/>
+      </g>
+    </g>
+    
+    <g transform="translate(60,60)">
+      <ellipse rx="42" ry="12" fill="none" stroke="#312e81" stroke-width="0.4" opacity="0.3" transform="rotate(-15)"/>
+      <g style="animation: spinRing 10s linear infinite; transform-origin: 0 0; transform: rotate(-15deg)">
+        <ellipse rx="42" ry="12" fill="none" stroke="#4338ca" stroke-width="0.5" opacity="0.25" stroke-dasharray="4 8"/>
+      </g>
+    </g>
+    
+    <circle cx="60" cy="60" fill="#1d4ed8">
+      <animate attributeName="r" values="10;12;10" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="60" cy="60" r="6" fill="#3b82f6"/>
+    <circle cx="57" cy="57" r="2.5" fill="#93c5fd" opacity="0.7"/>
+    
+    <polygon points="60,14 62,20 68,20 63,24 65,30 60,26 55,30 57,24 52,20 58,20"
+      fill="#4f46e5" opacity="0.15">
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 60 60" to="360 60 60" dur="20s" repeatCount="indefinite"/>
+    </polygon>
+    
+    </svg>
+  </div>
+  <div class="card-info">
+    <span class="card-role">Diseñadora Fullstack</span>
+    <h2 class="card-name">Nataly Betancur</h2>
+    <p class="card-fact">Chupo dedo</p>
+  </div>
+</article>
+
+<article class="card" id="sebas">
+  <div class="card-art" style="background: linear-gradient(135deg, #ffffff, #06144b);">
+    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+    <title>Arte abstracto estilo Mondrian animado</title>
+    <desc>Composición minimalista con rectángulos, líneas y círculos en azul eléctrico, blanco y negro</desc>
+    <defs>
+    <style>
+    @keyframes expandH {
+    0%,100% { transform: scaleX(1); }
+    50% { transform: scaleX(1.04); }
+    }
+    @keyframes expandV {
+    0%,100% { transform: scaleY(1); }
+     50% { transform: scaleY(1.06); }
+    }
+    @keyframes fadeBlock {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.75; }
+     }
+    @keyframes pulseCircle {
+    0%,100% { r: 10; }
+    50% { r: 12; }
+    }
+    @keyframes slideH {
+    0%,100% { transform: translateX(0); }
+    50% { transform: translateX(2px); }
+    }
+    @keyframes slideV {
+    0%,100% { transform: translateY(0); }
+     50% { transform: translateY(-2px); }
+    }
+    </style>
+    </defs>
+    
+     
+    
+    <!-- Fondo blanco -->
+    <rect width="120" height="120" fill="#ffffff"/>
+    
+     
+    
+    <!-- Bloque azul eléctrico grande — arriba izquierda -->
+    <rect x="3" y="3" width="52" height="38" fill="#1e40af">
+    <animate attributeName="opacity" values="1;0.85;1" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque negro — arriba derecha -->
+    <rect x="65" y="3" width="52" height="22" fill="#0f0f0f">
+    <animate attributeName="opacity" values="1;0.8;1" dur="5.5s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque blanco — arriba derecha inferior -->
+    <rect x="65" y="35" width="52" height="9" fill="#f5f5f5" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Bloque azul medio — centro derecha -->
+    <rect x="82" y="54" width="35" height="35" fill="#2563eb">
+    <animate attributeName="opacity" values="1;0.78;1" dur="3.8s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque negro pequeño — centro izquierda -->
+    <rect x="3" y="51" width="24" height="24" fill="#0f0f0f">
+    <animate attributeName="opacity" values="1;0.7;1" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque azul claro — inferior izquierda -->
+    <rect x="3" y="85" width="38" height="32" fill="#3b82f6">
+    <animate attributeName="opacity" values="1;0.82;1" dur="4.5s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque blanco — inferior centro -->
+    <rect x="51" y="85" width="25" height="32" fill="#ffffff" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Bloque negro — inferior derecha -->
+    <rect x="86" y="99" width="31" height="18" fill="#111111">
+    <animate attributeName="opacity" values="1;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Líneas de cuadrícula Mondrian — horizontales -->
+    <line x1="0" y1="3" x2="120" y2="3" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="44" x2="120" y2="44" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="54" x2="120" y2="54" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="85" x2="120" y2="85" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="117" x2="120" y2="117" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Líneas verticales -->
+    <line x1="3" y1="0" x2="3" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="62" y1="0" x2="62" y2="85" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="82" y1="54" x2="82" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="48" y1="85" x2="48" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="117" y1="0" x2="117" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Círculo blanco con borde negro — acento Mondrian -->
+    <circle cx="73" cy="69" r="10" fill="#ffffff" stroke="#0f0f0f" stroke-width="3">
+    <animate attributeName="r" values="10;12;10" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    
+     
+    
+    <!-- Círculo azul interior -->
+    <circle cx="73" cy="69" r="4" fill="#1d4ed8">
+    <animate attributeName="r" values="4;5.5;4" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    
+     
+    
+    </svg>
+  </div>
+  <div class="card-info">
+    <span class="card-role">Product Designer </span>
+    <h2 class="card-name">Sebas Sierra </h2>
+    <p class="card-fact">De chiquito me daban miedo las personas enanas</p>
+  </div>
+</article>
 
 </main>
 
