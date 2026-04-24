@@ -582,7 +582,139 @@
   </div>
 </article>
 
-  <!-- Slots vacíos (se generan dinámicamente con JS) -->
+<article class="card" id="sebas">
+  <div class="card-art" style="background: linear-gradient(135deg, #ffffff, #06144b);">
+    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+    <title>Arte abstracto estilo Mondrian animado</title>
+    <desc>Composición minimalista con rectángulos, líneas y círculos en azul eléctrico, blanco y negro</desc>
+    <defs>
+    <style>
+    @keyframes expandH {
+    0%,100% { transform: scaleX(1); }
+    50% { transform: scaleX(1.04); }
+    }
+    @keyframes expandV {
+    0%,100% { transform: scaleY(1); }
+     50% { transform: scaleY(1.06); }
+    }
+    @keyframes fadeBlock {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.75; }
+     }
+    @keyframes pulseCircle {
+    0%,100% { r: 10; }
+    50% { r: 12; }
+    }
+    @keyframes slideH {
+    0%,100% { transform: translateX(0); }
+    50% { transform: translateX(2px); }
+    }
+    @keyframes slideV {
+    0%,100% { transform: translateY(0); }
+     50% { transform: translateY(-2px); }
+    }
+    </style>
+    </defs>
+    
+     
+    
+    <!-- Fondo blanco -->
+    <rect width="120" height="120" fill="#ffffff"/>
+    
+     
+    
+    <!-- Bloque azul eléctrico grande — arriba izquierda -->
+    <rect x="3" y="3" width="52" height="38" fill="#1e40af">
+    <animate attributeName="opacity" values="1;0.85;1" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque negro — arriba derecha -->
+    <rect x="65" y="3" width="52" height="22" fill="#0f0f0f">
+    <animate attributeName="opacity" values="1;0.8;1" dur="5.5s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque blanco — arriba derecha inferior -->
+    <rect x="65" y="35" width="52" height="9" fill="#f5f5f5" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Bloque azul medio — centro derecha -->
+    <rect x="82" y="54" width="35" height="35" fill="#2563eb">
+    <animate attributeName="opacity" values="1;0.78;1" dur="3.8s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque negro pequeño — centro izquierda -->
+    <rect x="3" y="51" width="24" height="24" fill="#0f0f0f">
+    <animate attributeName="opacity" values="1;0.7;1" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque azul claro — inferior izquierda -->
+    <rect x="3" y="85" width="38" height="32" fill="#3b82f6">
+    <animate attributeName="opacity" values="1;0.82;1" dur="4.5s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Bloque blanco — inferior centro -->
+    <rect x="51" y="85" width="25" height="32" fill="#ffffff" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Bloque negro — inferior derecha -->
+    <rect x="86" y="99" width="31" height="18" fill="#111111">
+    <animate attributeName="opacity" values="1;0.75;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+    
+     
+    
+    <!-- Líneas de cuadrícula Mondrian — horizontales -->
+    <line x1="0" y1="3" x2="120" y2="3" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="44" x2="120" y2="44" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="54" x2="120" y2="54" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="85" x2="120" y2="85" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="0" y1="117" x2="120" y2="117" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Líneas verticales -->
+    <line x1="3" y1="0" x2="3" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="62" y1="0" x2="62" y2="85" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="82" y1="54" x2="82" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="48" y1="85" x2="48" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    <line x1="117" y1="0" x2="117" y2="120" stroke="#0f0f0f" stroke-width="3"/>
+    
+     
+    
+    <!-- Círculo blanco con borde negro — acento Mondrian -->
+    <circle cx="73" cy="69" r="10" fill="#ffffff" stroke="#0f0f0f" stroke-width="3">
+    <animate attributeName="r" values="10;12;10" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    
+     
+    
+    <!-- Círculo azul interior -->
+    <circle cx="73" cy="69" r="4" fill="#1d4ed8">
+    <animate attributeName="r" values="4;5.5;4" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    
+     
+    
+    </svg>
+  </div>
+  <div class="card-info">
+    <span class="card-role">Product Designer </span>
+    <h2 class="card-name">Sebas Sierra </h2>
+    <p class="card-fact">De chiquito me daban miedo las personas enanas</p>
+  </div>
+</article>
 
 </main>
 
